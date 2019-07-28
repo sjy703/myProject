@@ -1,0 +1,6 @@
+exception:
+  token:
+    unAuthorized:
+      msg: "올바르지 않은 토큰 정보 입니다."
+  login:
+    msg: "잘못된 사용자 정보입니다"

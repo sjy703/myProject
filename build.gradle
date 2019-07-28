@@ -1,0 +1,51 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.jy73'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+def generated = 'src/main/generated'
+def test = 'src/test/generated'
+def querydslVersion = '4.2.1'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'net.rakugakibox.util:yaml-resource-bundle:1.1'
+    compile('com.querydsl:querydsl-jpa')
+    compile ('com.querydsl:querydsl-apt')
+    compile  ('com.querydsl:querydsl-core')
+    compile ('org.projectlombok:lombok')
+    annotationProcessor(
+            'com.querydsl:querydsl-apt:4.2.1:jpa',
+            'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final',
+            'javax.annotation:javax.annotation-api:1.3.2',
+            'org.projectlombok:lombok'
+    )
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+clean.doLast {
+    file(generated).deleteDir()
+}
