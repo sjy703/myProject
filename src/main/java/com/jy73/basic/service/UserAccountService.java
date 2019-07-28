@@ -2,6 +2,7 @@ package com.jy73.basic.service;
 
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
+import com.jy73.basic.exception.CustomException;
 import com.jy73.basic.repository.UserAccountRepository;
 import com.jy73.basic.vo.UserAccountVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class UserAccountService implements UserDetailsService {
 
     public UserAccountVo getUserInfoByPhoneNumber(UserAccountDto dto) throws Exception {
         Optional<Account> optionalAccount = userAccountRepository.findByPhoneNumber(dto.getPhoneNumber());
-        Account account = optionalAccount.orElseThrow(() ->new Exception("존재하지 않는 전화번호 입니다."));
+        Account account = optionalAccount.orElseThrow(() ->new CustomException("존재하지 않는 전화번호 입니다."));
         return UserAccountVo.builder().name(account.getName()).phoneNumber(account.getPhoneNumber()).userId(account.getUserId()).build();
     }
 
