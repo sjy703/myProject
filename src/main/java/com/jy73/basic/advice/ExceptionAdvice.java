@@ -49,7 +49,7 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(CustomException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected CommonResult loginException(CustomException e) {
+    protected CommonResult customException(CustomException e) {
         return responseService.getFailResult(e.getMessage());
     }
 }
