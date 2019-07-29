@@ -26,15 +26,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic().disable()
+        http.httpBasic().disable().
+        sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf().disable()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenAuthProvider), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
-                        .antMatchers(HttpMethod.POST, "/signup", "/login").permitAll()
-                        .anyRequest().hasAnyRole("USER")
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .csrf().disable();
+                        .antMatchers("/signup", "/login").permitAll()
+                        .anyRequest().authenticated();
 
     }
 
