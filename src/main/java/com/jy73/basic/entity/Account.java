@@ -47,6 +47,19 @@ public class Account implements UserDetails {
     @Column(length = 20)
     private String name;
 
+    @Column(length = 10)
+    private int height;
+
+    @Column(length = 10)
+    private int weight;
+
+    @Column(length = 10)
+    private int age;
+
+    @Column(length = 10)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
        return roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
@@ -80,5 +93,16 @@ public class Account implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public boolean isEnabled() {
         return true;
+    }
+
+    public enum Gender {
+        MAN("man"), WOMAN("woman");
+        String gender;
+        Gender(String gender) {
+            this.gender = gender;
+        }
+        public String getGender() {
+            return this.gender;
+        }
     }
 }

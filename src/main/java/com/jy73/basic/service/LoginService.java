@@ -32,7 +32,8 @@ public class LoginService {
     public void singUp(UserAccountDto dto)  {
         userAccountRepository.save(Account.builder().userId(dto.getUserId())
         .name(dto.getName()).password(passwordEncoder.encode(dto.getPassword()))
-        .phoneNumber(dto.getPhoneNumber()).roles(Collections.singletonList("ROLE_USER"))
+        .phoneNumber(dto.getPhoneNumber()).roles(Collections.singletonList("ROLE_USER")).age(dto.getAge())
+                .height(dto.getHeight()).weight(dto.getWeight()).gender(dto.getGender())
         .build());
     }
 
