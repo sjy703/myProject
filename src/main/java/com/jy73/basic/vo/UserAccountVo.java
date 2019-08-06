@@ -4,6 +4,8 @@ import com.jy73.basic.entity.Account;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @Getter
 @Setter
@@ -26,4 +28,8 @@ public class UserAccountVo {
     private int age;
 
     private Account.Gender gender;
+
+    private long bmr;
+
+    private LocalDateTime birthDate;
 }

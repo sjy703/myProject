@@ -1,4 +1,4 @@
-package com.jy73.basic.repository;
+package com.jy73.basic.repository.userAccount;
 
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import javax.transaction.Transactional;
 
 @Repository
 public class UserAccountRepositoryImpl extends QuerydslRepositorySupport implements CustomUserAccountRepository {

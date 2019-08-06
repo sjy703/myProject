@@ -3,12 +3,12 @@ package com.jy73.basic.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     @Column(unique = true, length = 30)
     private String userId;
@@ -35,7 +35,7 @@ public class Account implements UserDetails {
     private String password;
 
     @CreationTimestamp
-    private Date createDate;
+    private LocalDateTime createDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -59,6 +59,11 @@ public class Account implements UserDetails {
     @Column(length = 10)
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @Column(length = 10)
+    float bmr;
+
+    Date birthDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

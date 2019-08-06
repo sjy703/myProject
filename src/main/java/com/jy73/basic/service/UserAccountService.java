@@ -3,7 +3,7 @@ package com.jy73.basic.service;
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
 import com.jy73.basic.exception.CustomException;
-import com.jy73.basic.repository.UserAccountRepository;
+import com.jy73.basic.repository.userAccount.UserAccountRepository;
 import com.jy73.basic.vo.UserAccountVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

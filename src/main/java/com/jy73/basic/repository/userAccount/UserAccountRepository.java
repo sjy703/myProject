@@ -1,4 +1,4 @@
-package com.jy73.basic.repository;
+package com.jy73.basic.repository.userAccount;
 
 import com.jy73.basic.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;

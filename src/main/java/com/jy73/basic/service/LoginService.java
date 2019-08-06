@@ -2,7 +2,7 @@ package com.jy73.basic.service;
 
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
-import com.jy73.basic.repository.UserAccountRepository;
+import com.jy73.basic.repository.userAccount.UserAccountRepository;
 import com.jy73.basic.security.JwtTokenAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
