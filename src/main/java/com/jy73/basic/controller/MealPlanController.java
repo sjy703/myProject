@@ -7,6 +7,9 @@ import com.jy73.basic.service.MealPlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/meal")
@@ -20,8 +23,15 @@ public class MealPlanController {
     }
 
     @GetMapping("/plan")
-    public MealPlan getMealPlan(MealPlan mealPlan) {
-        return mealPlanService.getMealPlan(mealPlan);
+    public List<MealPlan> getMealPlans(MealPlan mealPlan) {
+        return mealPlanService.getMealPlans(mealPlan);
+    }
+
+    @GetMapping("/plan/duration")
+    public List<MealPlan> getMealPlansBetween(@RequestParam("id") String userId, @RequestParam("start") String startDate, @RequestParam("end") String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        return mealPlanService.getMealPlansBetween(userId, start, end);
     }
 
     @PutMapping("/plan")
@@ -34,15 +44,14 @@ public class MealPlanController {
         mealPlanService.deleteMealPlan(id);
     }
 
+
     @PostMapping("/nutrient")
-    public void addNutrient(@RequestBody NutrientDto dto)
-    {
+    public void addNutrient(@RequestBody NutrientDto dto) {
         mealPlanService.addNutrient(dto);
     }
 
     @DeleteMapping("/nutrient")
-    public void deleteNutrient(long mealPlanId, long id)
-    {
+    public void deleteNutrient(long mealPlanId, long id) {
         mealPlanService.removeNutrient(mealPlanId, id);
     }
 }

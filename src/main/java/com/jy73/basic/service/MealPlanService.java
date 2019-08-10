@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +24,28 @@ public class MealPlanService {
         mealPlanRepository.save(mealPlan);
     }
 
-    public MealPlan getMealPlan(MealPlan mealPlan) {
+    public List<MealPlan> getMealPlans(MealPlan mealPlan) {
+        List<MealPlan> optionalMealPlan = mealPlanRepository.findByUserIdAndCreateDate(mealPlan.getUserId(), mealPlan.getCreateDate());
+        if (optionalMealPlan.isEmpty()) {
+            throw new CustomException("식단이 없습니다.");
+        }
+        return optionalMealPlan;
+    }
 
-        Optional<MealPlan> optionalMealPlan = mealPlanRepository.findByUserIdAndCreateDate(mealPlan.getUserId(), mealPlan.getCreateDate());
-        MealPlan mealPlanResult = optionalMealPlan.orElseThrow(() -> new CustomException("식단이 없습니다."));
-        return mealPlanResult;
+    public List<MealPlan> getMealPlansBetween(String userId, LocalDate start,  LocalDate end) {
+        List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetween(userId, start, end);
+        if (mealPlans.isEmpty()) {
+            throw new CustomException("영양 정보가 없습니다.");
+        }
+        return mealPlans;
     }
 
     @Transactional
     public void addNutrient(NutrientDto dto) {
         MealPlan mealPlan = getMealById(dto.getMealPlanId());
-        Nutrient nutrient = Nutrient.builder().calorie(dto.getCalorie()).carbohydrate(dto.getCarbohydrate()).fat(dto.getFat()).protein(dto.getProtein()).foodName(dto.getFoodName()).build();
+        Nutrient nutrient = Nutrient.builder().calorie(dto.getCalorie()).carbohydrate(dto.getCarbohydrate()).
+                fat(dto.getFat()).protein(dto.getProtein()).foodName(dto.getFoodName()).
+                createDate(dto.getCreateDate()).intake(dto.getIntake()).unit(dto.getUnit()).userId(dto.getUserId()).build();
         mealPlan.getNutrient().add(nutrient);
         mealPlanRepository.save(mealPlan);
     }

@@ -1,7 +1,6 @@
 package com.jy73.basic.entity;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,7 +21,7 @@ public class MealPlan {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     String userId;
 
     @Column(length = 100)
@@ -31,7 +30,6 @@ public class MealPlan {
     @Column(length = 500)
     String remark;
 
-    @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate createDate;
 

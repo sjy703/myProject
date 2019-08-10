@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OneDayMealPlanVo {
+public class MealPlanSummaryVo {
 
     List<MealPlan> mealPlanList;
 
@@ -23,6 +23,4 @@ public class OneDayMealPlanVo {
     float totalProtein;
 
     float totalFat;
-
-
 }
