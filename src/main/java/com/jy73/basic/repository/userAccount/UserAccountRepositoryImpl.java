@@ -43,8 +43,8 @@ public class UserAccountRepositoryImpl extends QuerydslRepositorySupport impleme
         if (dto.getWeight() > 0) {
             updateClause.set(account.weight, dto.getWeight());
         }
-        if (dto.getAge() > 0) {
-            updateClause.set(account.age, dto.getAge());
+        if (dto.getBirthDate() != null) {
+            updateClause.set(account.birthDate, dto.getBirthDate());
         }
         if (!StringUtils.isEmpty(dto.getGender())) {
             updateClause.set(account.gender, dto.getGender());

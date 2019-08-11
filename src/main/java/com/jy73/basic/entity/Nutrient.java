@@ -41,8 +41,15 @@ public class Nutrient {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createDate;
 
-    /*@ManyToOne
-    private MealPlan mealPlan;*/
+    @Column(nullable = false)
+    private MealPlan.MealCategory mealCategory;
+
+    @PrePersist
+    public void onPersist() {
+        if(this.createDate == null){
+            this.createDate = LocalDate.now();
+        }
+    }
 
     public enum Unit {
         G("g"), SERVING("인분");

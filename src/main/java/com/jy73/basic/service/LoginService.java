@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.Collections;
 
 @Service
@@ -29,12 +31,26 @@ public class LoginService {
     }
 
     @Transactional
-    public void singUp(UserAccountDto dto)  {
+    public void singUp(UserAccountDto dto) {
+        float bmr = calculateBmr(dto.getBirthDate(), dto.getWeight(), dto.getHeight(), dto.getGender());
         userAccountRepository.save(Account.builder().userId(dto.getUserId())
-        .name(dto.getName()).password(passwordEncoder.encode(dto.getPassword()))
-        .phoneNumber(dto.getPhoneNumber()).roles(Collections.singletonList("ROLE_USER")).age(dto.getAge())
+                .name(dto.getName()).password(passwordEncoder.encode(dto.getPassword()))
+                .phoneNumber(dto.getPhoneNumber()).roles(Collections.singletonList("ROLE_USER"))
                 .height(dto.getHeight()).weight(dto.getWeight()).gender(dto.getGender())
-        .build());
+                .birthDate(dto.getBirthDate()).bmr(bmr)
+                .build());
+    }
+
+    private float calculateBmr(LocalDate birthDate, float weight, float height, Account.Gender gender) {
+        int age = LocalDate.now().getYear() - birthDate.getYear();
+        if (LocalDate.now().getMonth().getValue() < birthDate.getMonth().getValue() || LocalDate.now().getDayOfMonth() < birthDate.getDayOfMonth()) {
+            age--;
+        }
+        if (gender.getGender().equalsIgnoreCase("male")) {
+            return (float) (88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age));
+        } else {
+            return (float) (447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age));
+        }
     }
 
 

@@ -2,8 +2,10 @@ package com.jy73.basic.dto;
 
 import com.jy73.basic.entity.Account;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -30,5 +32,6 @@ public class UserAccountDto {
 
     private Account.Gender gender;
 
-    private LocalDateTime birthDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    LocalDate birthDate;
 }

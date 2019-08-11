@@ -23,24 +23,22 @@ public class UserAccountService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    /*public void createAccount(Account user) {
+   /* public void createAccount(Account user) {
         String password = user.getPassword();
         user.setPassword(passwordEncoder.encode(password));
         userAccountRepository.save(user);
     }*/
 
-    public UserAccountVo getUserInfoByPhoneNumber(UserAccountDto dto) throws Exception {
+    public Account getUserInfoByPhoneNumber(UserAccountDto dto) throws Exception {
         Optional<Account> optionalAccount = userAccountRepository.findByPhoneNumber(dto.getPhoneNumber());
         Account account = optionalAccount.orElseThrow(() ->new CustomException("존재하지 않는 전화번호 입니다."));
-        return UserAccountVo.builder().name(account.getName()).phoneNumber(account.getPhoneNumber()).userId(account.getUserId()).height(account.getHeight())
-        .age(account.getAge()).weight(account.getWeight()).gender(account.getGender()).build();
+        return account;
     }
 
-    public UserAccountVo getUserInfoById(UserAccountDto dto) throws Exception {
+    public Account getUserInfoById(UserAccountDto dto) throws Exception {
         Optional<Account> optionalUser = userAccountRepository.findByUserId(dto.getUserId());
         Account account = optionalUser.orElseThrow(() ->new UsernameNotFoundException(dto.getUserId()));
-        return UserAccountVo.builder().name(account.getName()).phoneNumber(account.getPhoneNumber()).userId(account.getUserId()).height(account.getHeight())
-                .age(account.getAge()).weight(account.getWeight()).gender(account.getGender()).build();
+        return account;
     }
 
     public void updateUserInfo(UserAccountDto dto) {

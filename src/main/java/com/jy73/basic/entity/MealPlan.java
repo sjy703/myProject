@@ -22,18 +22,42 @@ public class MealPlan {
     private long id;
 
     @Column(length = 30, nullable = false)
-    String userId;
+    private String userId;
 
-    @Column(length = 100)
-    String title;
+    @Column(nullable = false)
+    private MealCategory mealCategory;
 
     @Column(length = 500)
-    String remark;
+    private String remark;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    LocalDate createDate;
+    private LocalDate createDate;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     // @JoinColumn(name = "parent_id")
-    List<Nutrient> nutrient = new ArrayList<>();
+            List<Nutrient> nutrient = new ArrayList<>();
+
+    @PrePersist
+    public void onPersist() {
+        if(this.createDate == null){
+            this.createDate = LocalDate.now();
+        }
+    }
+
+    public enum MealCategory {
+        BREAKFAST("breakfast"),
+        LUNCH("lunch"),
+        DINNER("dinner"),
+        NOSH("nosh");
+        String category;
+
+        MealCategory(String category) {
+            this.category = category;
+        }
+
+        public String getCategory()
+        {
+            return this.category;
+        }
+    }
 }

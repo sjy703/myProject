@@ -3,11 +3,13 @@ package com.jy73.basic.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,7 @@ public class Account implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<String> roles = new ArrayList<>();
 
     @Column(unique = true, length = 20)
@@ -54,18 +57,17 @@ public class Account implements UserDetails {
     private int weight;
 
     @Column(length = 10)
-    private int age;
-
-    @Column(length = 10)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(length = 10)
     float bmr;
 
-    Date birthDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    LocalDate birthDate;
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public Collection<? extends GrantedAuthority> getAuthorities() {
        return roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
     }
@@ -101,7 +103,7 @@ public class Account implements UserDetails {
     }
 
     public enum Gender {
-        MAN("man"), WOMAN("woman");
+        MALE("male"), FEMALE("female");
         String gender;
         Gender(String gender) {
             this.gender = gender;
