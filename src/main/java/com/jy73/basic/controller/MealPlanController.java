@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -33,8 +34,8 @@ public class MealPlanController {
 
     @GetMapping("/plan/duration")
     public List<MealPlan> getMealPlansBetween(@RequestParam("id") String userId, @RequestParam("start") String startDate, @RequestParam("end") String endDate, @RequestParam(value="category", required = false) MealPlan.MealCategory category) {
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
+        LocalDateTime start = LocalDate.parse(startDate).atTime(0,0,0);// LocalDateTime.parse(startDate).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime end = LocalDate.parse(startDate).atTime(23,59,59);// LocalDateTime.parse(endDate).withHour(23).withMinute(59).withSecond(59);
         if (category == null)
             return mealPlanService.getMealPlansBetween(userId, start, end);
         return mealPlanService.getMealPlansBetweenAndCategory(userId, start, end, category);

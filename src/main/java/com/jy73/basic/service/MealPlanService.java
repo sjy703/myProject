@@ -1,6 +1,5 @@
 package com.jy73.basic.service;
 
-import com.jy73.basic.controller.MealPlanController;
 import com.jy73.basic.dto.MealPlanDto;
 import com.jy73.basic.dto.NutrientDto;
 import com.jy73.basic.entity.DailyBodyStatus;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class MealPlanService {
         return mealPlan;
     }
 
-    public List<MealPlan> getMealPlansBetween(String userId, LocalDate start, LocalDate end) {
+    public List<MealPlan> getMealPlansBetween(String userId, LocalDateTime start, LocalDateTime end) {
         List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetween(userId, start, end);
         /*if (mealPlans.isEmpty()) {
             throw new CustomException("영양 정보가 없습니다.");
@@ -49,7 +49,7 @@ public class MealPlanService {
         return mealPlans;
     }
 
-    public List<MealPlan> getMealPlansBetweenAndCategory(String userId, LocalDate start, LocalDate end, MealPlan.MealCategory category) {
+    public List<MealPlan> getMealPlansBetweenAndCategory(String userId, LocalDateTime start, LocalDateTime end, MealPlan.MealCategory category) {
         List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetweenAndMealCategory(userId, start, end, category);
         /*if (mealPlans.isEmpty()) {
             throw new CustomException("영양 정보가 없습니다.");

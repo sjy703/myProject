@@ -46,7 +46,7 @@ public class Nutrient {
 
     @PrePersist
     public void onPersist() {
-        if(this.createDate == null){
+        if (this.createDate == null) {
             this.createDate = LocalDate.now();
         }
     }
@@ -54,9 +54,11 @@ public class Nutrient {
     public enum Unit {
         G("g"), SERVING("인분");
         String unit;
+
         Unit(String unit) {
             this.unit = unit;
         }
+
         public String getUnit() {
             return this.unit;
         }
