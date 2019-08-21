@@ -2,6 +2,7 @@ package com.jy73.basic.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -37,6 +38,19 @@ public class MealPlan {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<Nutrient> nutrient = new ArrayList<>();
+
+
+    @ColumnDefault("0")
+    float totalCalories;
+
+    @ColumnDefault("0")
+    float totalFat;
+
+    @ColumnDefault("0")
+    float totalCarbohydrate;
+
+    @ColumnDefault("0")
+    float totalProtein;
 
     @PrePersist
     public void onPersist() {

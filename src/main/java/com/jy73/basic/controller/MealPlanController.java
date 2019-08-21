@@ -24,18 +24,29 @@ public class MealPlanController {
         mealPlanService.createMealPlan(mealPlan);
     }
 
-    @GetMapping("/plan")
-    public List<MealPlan> getMealPlans(@RequestParam("id") String userId, @RequestParam("createDate") String date, @RequestParam(value="category", required = false) MealPlan.MealCategory category) {
-        LocalDate createDate = LocalDate.parse(date);
-        if (category == null)
-            return mealPlanService.getMealPlans(userId, createDate);
-        return mealPlanService.getMealPlansByCategory(userId, createDate, category);
-    }
+//    @GetMapping("/plan")
+//    public List<MealPlan> getMealPlans(@RequestParam("id") String userId, @RequestParam(value = "createDate", required =  false, defaultValue = "") String date, @RequestParam(value="category", required = false) MealPlan.MealCategory category) {
+//        LocalDate createDate;
+//        if (date.isEmpty()) {
+//            createDate = LocalDate.now();
+//        } else {
+//            createDate = LocalDate.parse(date);
+//        }
+//        if (category == null)
+//            return mealPlanService.getMealPlans(userId, createDate);
+//        return mealPlanService.getMealPlansByCategory(userId, createDate, category);
+//    }
 
-    @GetMapping("/plan/duration")
-    public List<MealPlan> getMealPlansBetween(@RequestParam("id") String userId, @RequestParam("start") String startDate, @RequestParam("end") String endDate, @RequestParam(value="category", required = false) MealPlan.MealCategory category) {
-        LocalDateTime start = LocalDate.parse(startDate).atTime(0,0,0);// LocalDateTime.parse(startDate).withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime end = LocalDate.parse(startDate).atTime(23,59,59);// LocalDateTime.parse(endDate).withHour(23).withMinute(59).withSecond(59);
+    @GetMapping("/plan")
+    public List<MealPlan> getMealPlansBetween(@RequestParam("id") String userId, @RequestParam("start") String startDate, @RequestParam(value = "end", required = false, defaultValue = "") String endDate, @RequestParam(value = "category", required = false) MealPlan.MealCategory category) {
+        LocalDateTime start = LocalDate.parse(startDate).atTime(0, 0, 0);
+        LocalDateTime end;
+        if (endDate.isEmpty()) {
+            end =  LocalDate.parse(startDate).atTime(23, 59, 59);
+        } else {
+            end = LocalDate.parse(endDate).atTime(23, 59, 59);
+        }
+
         if (category == null)
             return mealPlanService.getMealPlansBetween(userId, start, end);
         return mealPlanService.getMealPlansBetweenAndCategory(userId, start, end, category);
@@ -47,6 +58,15 @@ public class MealPlanController {
         return mealPlanService.getDailySummary(userId, date);
     }
 
+    @PutMapping("/plan/remark")
+    public void updateRemark(@RequestBody MealPlanDto dto) {
+        mealPlanService.updateRemark(dto);
+    }
+
+    @PutMapping("/plan/nutrient")
+    public void updateNutrient(@RequestBody MealPlanDto dto) {
+        mealPlanService.updateNutrient(dto);
+    }
     @PutMapping("/plan")
     public void updateMealPlan(@RequestBody MealPlanDto dto) {
         mealPlanService.updateMealPlan(dto);

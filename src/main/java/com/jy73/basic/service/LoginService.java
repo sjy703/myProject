@@ -2,6 +2,7 @@ package com.jy73.basic.service;
 
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
+import com.jy73.basic.exception.CustomException;
 import com.jy73.basic.repository.userAccount.UserAccountRepository;
 import com.jy73.basic.security.JwtTokenAuthProvider;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,18 +29,21 @@ public class LoginService {
         if (!passwordEncoder.matches(dto.getPassword(), account.getPassword())) {
             throw new LoginException();
         }
-        return jwtTokenAuthProvider.createToken(account.getUserId(), account.getRoles(), account.getName());
+        return jwtTokenAuthProvider.createToken(account.getUserId(), account.getRoles());
     }
 
     @Transactional
     public void singUp(UserAccountDto dto) {
-        float bmr = calculateBmr(dto.getBirthDate(), dto.getWeight(), dto.getHeight(), dto.getGender());
-        userAccountRepository.save(Account.builder().userId(dto.getUserId())
-                .name(dto.getName()).password(passwordEncoder.encode(dto.getPassword()))
-                .phoneNumber(dto.getPhoneNumber()).roles(Collections.singletonList("ROLE_USER"))
-                .height(dto.getHeight()).weight(dto.getWeight()).gender(dto.getGender())
-                .birthDate(dto.getBirthDate()).bmr(bmr)
-                .build());
+        if (userAccountRepository.findByUserId(dto.getUserId()).isPresent()) {
+            throw new CustomException("이미 등록된 아이디입니다.");
+        } else {
+            float bmr = calculateBmr(dto.getBirthDate(), dto.getWeight(), dto.getHeight(), dto.getGender());
+            userAccountRepository.save(Account.builder().userId(dto.getUserId()).password(passwordEncoder.encode(dto.getPassword())).roles(Collections.singletonList("ROLE_USER"))
+                    .height(dto.getHeight()).weight(dto.getWeight()).gender(dto.getGender())
+                    .birthDate(dto.getBirthDate()).bmr(bmr)
+                    .build());
+        }
+
     }
 
     private float calculateBmr(LocalDate birthDate, float weight, float height, Account.Gender gender) {

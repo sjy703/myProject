@@ -23,14 +23,14 @@ public class ResponseService {
     public CommonResult getSuccessResult() {
         CommonResult result = new CommonResult();
         result.setSuccess(true);
-        result.setMsg(CommonResponse.SUCCESS.getMsg());
+        result.setMessage(CommonResponse.SUCCESS.getMsg());
         return result;
     }
 
     public CommonResult getFailResult(String msg) {
         CommonResult result = new CommonResult();
         result.setSuccess(false);
-        result.setMsg(msg);
+        result.setMessage(msg);
         return result;
     }
 }

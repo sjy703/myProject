@@ -6,6 +6,7 @@ import com.jy73.basic.entity.DailyBodyStatus;
 import com.jy73.basic.entity.MealPlan;
 import com.jy73.basic.entity.Nutrient;
 import com.jy73.basic.exception.CustomException;
+import com.jy73.basic.repository.Nutrient.NutrientRepository;
 import com.jy73.basic.repository.bodyStatus.BodyStatusRepository;
 import com.jy73.basic.repository.mealPlan.MealPlanRepository;
 import com.jy73.basic.vo.DailySummaryVo;
@@ -23,7 +24,7 @@ import java.util.List;
 public class MealPlanService {
 
     private final MealPlanRepository mealPlanRepository;
-
+    private final NutrientRepository nutrientRepository;
     private final BodyStatusRepository bodyStatusRepository;
 
     @Transactional
@@ -31,15 +32,15 @@ public class MealPlanService {
         mealPlanRepository.save(mealPlan);
     }
 
-    public List<MealPlan> getMealPlans(String userId, LocalDate createDate) {
+/*    public List<MealPlan> getMealPlans(String userId, LocalDateTime createDate) {
         List<MealPlan> mealPlan = mealPlanRepository.findByUserIdAndCreateDate(userId, createDate);
         return mealPlan;
     }
 
-    public List<MealPlan> getMealPlansByCategory(String userId, LocalDate createDate, MealPlan.MealCategory category) {
+    public List<MealPlan> getMealPlansByCategory(String userId, LocalDateTime createDate, MealPlan.MealCategory category) {
         List<MealPlan> mealPlan = mealPlanRepository.findByUserIdAndCreateDateAndMealCategory(userId, createDate, category);
         return mealPlan;
-    }
+    }*/
 
     public List<MealPlan> getMealPlansBetween(String userId, LocalDateTime start, LocalDateTime end) {
         List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetween(userId, start, end);
@@ -75,10 +76,39 @@ public class MealPlanService {
     }
 
     @Transactional
-    public void updateMealPlan(MealPlanDto dto) {
+    public void updateRemark(MealPlanDto dto) {
         MealPlan mealPlan = getMealById(dto.getId());
         mealPlan.setRemark(dto.getRemark());
         mealPlanRepository.save(mealPlan);
+    }
+
+    @Transactional
+    public void updateNutrient(MealPlanDto dto) {
+        MealPlan mealPlan = getMealById(dto.getId());
+        mealPlan.setNutrient(dto.getNutrient());
+        saveAndDelete(dto, mealPlan);
+    }
+
+    @Transactional
+    public void updateMealPlan(MealPlanDto dto) {
+        MealPlan mealPlan = getMealById(dto.getId());
+        mealPlan.setNutrient(dto.getNutrient());
+        mealPlan.setRemark(dto.getRemark());
+        mealPlan.setTotalCalories(dto.getTotalCalories());
+        mealPlan.setTotalCarbohydrate(dto.getTotalCarbohydrate());
+        mealPlan.setTotalFat(dto.getTotalFat());
+        mealPlan.setTotalProtein(dto.getTotalProtein());
+        saveAndDelete(dto, mealPlan);
+    }
+
+    @Transactional
+    public void saveAndDelete(MealPlanDto dto, MealPlan mealPlan) {
+        mealPlanRepository.save(mealPlan);
+        if (dto.getRemoveList() != null) {
+            for (long id : dto.getRemoveList()) {
+                nutrientRepository.deleteById(id);
+            }
+        }
     }
 
     @Transactional
@@ -92,39 +122,43 @@ public class MealPlanService {
     }
 
     public DailySummaryVo getDailySummary(String userId, LocalDate date) {
-        List<MealPlan> breakFast = getMealPlansByCategory(userId, date, MealPlan.MealCategory.BREAKFAST);
-        List<MealPlan> lunch = getMealPlansByCategory(userId, date, MealPlan.MealCategory.LUNCH);
-        List<MealPlan> dinner = getMealPlansByCategory(userId, date, MealPlan.MealCategory.DINNER);
-        List<MealPlan> nosh = getMealPlansByCategory(userId, date, MealPlan.MealCategory.NOSH);
+        LocalDateTime start = date.atTime(0, 0, 0);
+        LocalDateTime end = date.atTime(23, 59, 59);
+        List<MealPlan> breakfast = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.BREAKFAST);
+        List<MealPlan> lunch = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.LUNCH);
+        List<MealPlan> dinner = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.DINNER);
+        List<MealPlan> nosh = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.NOSH);
 
 
         List<DailyBodyStatus> dailyBodyStatus = new ArrayList<>();
+
         dailyBodyStatus.add(bodyStatusRepository.findByUserIdAndCreateDate(userId, date).orElse(null));
 
-        DailySummaryVo summary = DailySummaryVo.builder().breakfast(breakFast).lunch(lunch).dinner(dinner).nosh(nosh)
-                .dailyBodyStatus(dailyBodyStatus).build();
 
-        calculateTotalNutrient(breakFast, summary);
-        calculateTotalNutrient(lunch, summary);
-        calculateTotalNutrient(dinner, summary);
-        calculateTotalNutrient(nosh, summary);
+        DailySummaryVo summary = DailySummaryVo.builder().breakfast(breakfast.isEmpty() ? new MealPlan() : breakfast.get(0)).lunch(lunch.isEmpty() ? new MealPlan() : lunch.get(0))
+                .dinner(dinner.isEmpty() ? new MealPlan() : dinner.get(0)).nosh(nosh)
+                .dailyBodyStatus(dailyBodyStatus.get(0)).build();
+
+        calculateTotalNutrient(summary);
+
+        summary.setFatPercentage((summary.getTotalFat() * 9) / summary.getTotalCalories() * 100);
+        summary.setCarbohydratePercentage((summary.getTotalCarbohydrate() * 9) / summary.getTotalCalories() * 100);
+        summary.setProteinPercentage((summary.getTotalProtein() * 9) / summary.getTotalCalories() * 100);
 
         return summary;
     }
 
-    private void calculateTotalNutrient(List<MealPlan> mealPlans, DailySummaryVo summary) {
-        float totalCalories = summary.getTotalCalories();
-        float totalFat = summary.getTotalFat();
-        float totalCarbohydrate = summary.getTotalCarbohydrate();
-        float totalProtein = summary.getTotalProtein();
-
+    private void calculateTotalNutrient(DailySummaryVo summary) {
+        List<MealPlan> mealPlans = new ArrayList<>();
+        mealPlans.add(summary.getBreakfast());
+        mealPlans.add(summary.getLunch());
+        mealPlans.add(summary.getDinner());
+        mealPlans.addAll(summary.getNosh());
         for (MealPlan meal : mealPlans) {
-            for (Nutrient nutrient : meal.getNutrient()) {
-                summary.setTotalCalories(totalCalories + nutrient.getCalorie());
-                summary.setTotalFat(totalFat + nutrient.getFat());
-                summary.setTotalCarbohydrate(totalCarbohydrate + nutrient.getCarbohydrate());
-                summary.setTotalProtein(totalProtein + nutrient.getProtein());
-            }
+                summary.setTotalCalories(summary.getTotalCalories() + meal.getTotalCalories());
+                summary.setTotalFat(summary.getTotalFat() + meal.getTotalFat());
+                summary.setTotalCarbohydrate(summary.getTotalCarbohydrate() + meal.getTotalCarbohydrate());
+                summary.setTotalProtein(summary.getTotalProtein() + meal.getTotalProtein());
         }
     }
 }
