@@ -6,6 +6,7 @@ import com.jy73.basic.entity.DailyBodyStatus;
 import com.jy73.basic.entity.MealPlan;
 import com.jy73.basic.entity.Nutrient;
 import com.jy73.basic.exception.CustomException;
+import com.jy73.basic.exception.ErrorCode;
 import com.jy73.basic.repository.Nutrient.NutrientRepository;
 import com.jy73.basic.repository.bodyStatus.BodyStatusRepository;
 import com.jy73.basic.repository.mealPlan.MealPlanRepository;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,30 +32,13 @@ public class MealPlanService {
         mealPlanRepository.save(mealPlan);
     }
 
-/*    public List<MealPlan> getMealPlans(String userId, LocalDateTime createDate) {
-        List<MealPlan> mealPlan = mealPlanRepository.findByUserIdAndCreateDate(userId, createDate);
-        return mealPlan;
+
+    public List<MealPlan> getMealPlansBetween(String userId, LocalDate start, LocalDate end) {
+        return mealPlanRepository.findByUserIdAndCreateDateBetween(userId, start, end);
     }
 
-    public List<MealPlan> getMealPlansByCategory(String userId, LocalDateTime createDate, MealPlan.MealCategory category) {
-        List<MealPlan> mealPlan = mealPlanRepository.findByUserIdAndCreateDateAndMealCategory(userId, createDate, category);
-        return mealPlan;
-    }*/
-
-    public List<MealPlan> getMealPlansBetween(String userId, LocalDateTime start, LocalDateTime end) {
-        List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetween(userId, start, end);
-        /*if (mealPlans.isEmpty()) {
-            throw new CustomException("영양 정보가 없습니다.");
-        }*/
-        return mealPlans;
-    }
-
-    public List<MealPlan> getMealPlansBetweenAndCategory(String userId, LocalDateTime start, LocalDateTime end, MealPlan.MealCategory category) {
-        List<MealPlan> mealPlans = mealPlanRepository.findByUserIdAndCreateDateBetweenAndMealCategory(userId, start, end, category);
-        /*if (mealPlans.isEmpty()) {
-            throw new CustomException("영양 정보가 없습니다.");
-        }*/
-        return mealPlans;
+    public List<MealPlan> getMealPlansBetweenAndCategory(String userId, LocalDate start, LocalDate end, MealPlan.MealCategory category) {
+        return mealPlanRepository.findByUserIdAndCreateDateBetweenAndMealCategoryOrderByCreateTime(userId, start, end, category);
     }
 
     @Transactional
@@ -98,11 +81,12 @@ public class MealPlanService {
         mealPlan.setTotalCarbohydrate(dto.getTotalCarbohydrate());
         mealPlan.setTotalFat(dto.getTotalFat());
         mealPlan.setTotalProtein(dto.getTotalProtein());
+        mealPlan.setCreateTime(dto.getCreateTime());
         saveAndDelete(dto, mealPlan);
     }
 
     @Transactional
-    public void saveAndDelete(MealPlanDto dto, MealPlan mealPlan) {
+    private void saveAndDelete(MealPlanDto dto, MealPlan mealPlan) {
         mealPlanRepository.save(mealPlan);
         if (dto.getRemoveList() != null) {
             for (long id : dto.getRemoveList()) {
@@ -117,17 +101,15 @@ public class MealPlanService {
     }
 
 
-    public MealPlan getMealById(long mealPlanId) {
-        return mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new CustomException("식단이 없습니다."));
+    private MealPlan getMealById(long mealPlanId) {
+        return mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new CustomException(ErrorCode.NO_DATA, "식단이 없습니다."));
     }
 
     public DailySummaryVo getDailySummary(String userId, LocalDate date) {
-        LocalDateTime start = date.atTime(0, 0, 0);
-        LocalDateTime end = date.atTime(23, 59, 59);
-        List<MealPlan> breakfast = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.BREAKFAST);
-        List<MealPlan> lunch = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.LUNCH);
-        List<MealPlan> dinner = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.DINNER);
-        List<MealPlan> nosh = getMealPlansBetweenAndCategory(userId, start, end, MealPlan.MealCategory.NOSH);
+        List<MealPlan> breakfast = getMealPlansBetweenAndCategory(userId, date, date, MealPlan.MealCategory.BREAKFAST);
+        List<MealPlan> lunch = getMealPlansBetweenAndCategory(userId, date, date, MealPlan.MealCategory.LUNCH);
+        List<MealPlan> dinner = getMealPlansBetweenAndCategory(userId, date, date, MealPlan.MealCategory.DINNER);
+        List<MealPlan> nosh = getMealPlansBetweenAndCategory(userId, date, date, MealPlan.MealCategory.NOSH);
 
 
         List<DailyBodyStatus> dailyBodyStatus = new ArrayList<>();

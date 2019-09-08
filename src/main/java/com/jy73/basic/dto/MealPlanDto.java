@@ -5,6 +5,7 @@ import com.jy73.basic.entity.Nutrient;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Component
@@ -22,13 +23,15 @@ public class MealPlanDto {
 
     private List<Nutrient> nutrient;
 
-    float totalCalories;
+    private float totalCalories;
 
-    float totalFat;
+    private float totalFat;
 
-    float totalCarbohydrate;
+    private float totalCarbohydrate;
 
-    float totalProtein;
+    private float totalProtein;
 
     private List<Long> removeList;
+
+    private LocalTime createTime;
 }

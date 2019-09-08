@@ -3,6 +3,7 @@ package com.jy73.basic.service;
 import com.jy73.basic.dto.UserAccountDto;
 import com.jy73.basic.entity.Account;
 import com.jy73.basic.exception.CustomException;
+import com.jy73.basic.exception.ErrorCode;
 import com.jy73.basic.repository.userAccount.UserAccountRepository;
 import com.jy73.basic.security.JwtTokenAuthProvider;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class LoginService {
     @Transactional
     public void singUp(UserAccountDto dto) {
         if (userAccountRepository.findByUserId(dto.getUserId()).isPresent()) {
-            throw new CustomException("이미 등록된 아이디입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_ID, "이미 등록된 아이디입니다.");
         } else {
             float bmr = calculateBmr(dto.getBirthDate(), dto.getWeight(), dto.getHeight(), dto.getGender());
             userAccountRepository.save(Account.builder().userId(dto.getUserId()).password(passwordEncoder.encode(dto.getPassword())).roles(Collections.singletonList("ROLE_USER"))

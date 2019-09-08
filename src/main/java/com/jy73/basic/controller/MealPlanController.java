@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,27 +23,15 @@ public class MealPlanController {
         mealPlanService.createMealPlan(mealPlan);
     }
 
-//    @GetMapping("/plan")
-//    public List<MealPlan> getMealPlans(@RequestParam("id") String userId, @RequestParam(value = "createDate", required =  false, defaultValue = "") String date, @RequestParam(value="category", required = false) MealPlan.MealCategory category) {
-//        LocalDate createDate;
-//        if (date.isEmpty()) {
-//            createDate = LocalDate.now();
-//        } else {
-//            createDate = LocalDate.parse(date);
-//        }
-//        if (category == null)
-//            return mealPlanService.getMealPlans(userId, createDate);
-//        return mealPlanService.getMealPlansByCategory(userId, createDate, category);
-//    }
-
     @GetMapping("/plan")
     public List<MealPlan> getMealPlansBetween(@RequestParam("id") String userId, @RequestParam("start") String startDate, @RequestParam(value = "end", required = false, defaultValue = "") String endDate, @RequestParam(value = "category", required = false) MealPlan.MealCategory category) {
-        LocalDateTime start = LocalDate.parse(startDate).atTime(0, 0, 0);
-        LocalDateTime end;
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end;
+
         if (endDate.isEmpty()) {
-            end =  LocalDate.parse(startDate).atTime(23, 59, 59);
+            end =  LocalDate.parse(startDate);
         } else {
-            end = LocalDate.parse(endDate).atTime(23, 59, 59);
+            end = LocalDate.parse(endDate);
         }
 
         if (category == null)

@@ -3,11 +3,10 @@ package com.jy73.basic.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +32,11 @@ public class MealPlan {
     @Column(length = 500)
     private String remark;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate createDate;
+
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime createTime;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<Nutrient> nutrient = new ArrayList<>();
@@ -55,7 +57,7 @@ public class MealPlan {
     @PrePersist
     public void onPersist() {
         if (this.createDate == null) {
-            this.createDate = LocalDateTime.now();
+            this.createDate = LocalDate.now();
         }
     }
 

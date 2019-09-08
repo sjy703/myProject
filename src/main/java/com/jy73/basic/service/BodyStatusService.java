@@ -3,6 +3,7 @@ package com.jy73.basic.service;
 
 import com.jy73.basic.entity.DailyBodyStatus;
 import com.jy73.basic.exception.CustomException;
+import com.jy73.basic.exception.ErrorCode;
 import com.jy73.basic.repository.bodyStatus.BodyStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class BodyStatusService {
 
     public DailyBodyStatus getBodyStatus(String userId, LocalDate createDate) {
         Optional<DailyBodyStatus> optionalDailyBodyStatus = bodyStatusRepository.findByUserIdAndCreateDate(userId, createDate);
-        DailyBodyStatus dailyBodyStatus = optionalDailyBodyStatus.orElseThrow(() -> new CustomException("결과가 없습니다."));
+        DailyBodyStatus dailyBodyStatus = optionalDailyBodyStatus.orElseThrow(() -> new CustomException(ErrorCode.NO_DATA, "결과가 없습니다."));
         return dailyBodyStatus;
     }
 
